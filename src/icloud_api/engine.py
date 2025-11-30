@@ -1,11 +1,11 @@
-from pyicloud import PyiCloudService
+
 from icloud_api.utils import authenticate
 from icloud_api.utils import (
     get_path_object, 
     download_file,
     find_all_files
 )
-import os
+
 from pathlib import Path
 import getpass
 
@@ -48,8 +48,10 @@ class ICloudEngine:
             paths, and the values are the iCloud file objects.
         """
         for key,val in all_files_remote.items():
-            if not os.path.exists(key):
-                os.makedirs(key, exist_ok=True)
+            parent_folder = Path(key).parent
+            # breakpoint()
+            if not parent_folder.exists():
+                parent_folder.mkdir(parents=True,exist_ok=True)
             download_file(
                 val,
                 local_path=key

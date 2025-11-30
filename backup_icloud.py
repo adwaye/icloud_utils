@@ -1,18 +1,16 @@
-from pyicloud import PyiCloudService
+from icloud_api.engine import ICloudEngine
 from argparse import ArgumentParser
 
-import getpass
 
 
-username = input("Enter your iCloud username: ")
-password = getpass.getpass("Enter your iCloud password: ")
+
 
 def main(args):
     # Create a PyiCloudService object
     local_path = args.local_path
     icloud_path = args.icloud_path
-    icloud_engine = PyiCloudService()
-    icloud_engine.sync_path(
+    icloud_engine = ICloudEngine()
+    icloud_engine.sync_paths(
         icloud_path=icloud_path,
         local_path=local_path
     )
@@ -27,7 +25,7 @@ if __name__ == "__main__":
         type=str
     )
     parser.add_argument(
-        '--icloud-path',
+        '--icloud_path',
         type=str
     )
     main(parser.parse_args())

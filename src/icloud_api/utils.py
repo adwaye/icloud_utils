@@ -2,6 +2,8 @@ from pyicloud import PyiCloudService
 from pyicloud.services.drive import DriveNode
 import logging,os
 
+logging.getLogger().setLevel(logging.INFO)
+
 def get_path_object(
     api: PyiCloudService,
     path: str,
@@ -11,7 +13,7 @@ def get_path_object(
     current_dict = api.drive
 
     for part in path_parts:
-        if part in current_dict:
+        if part in current_dict.dir():
             current_dict = current_dict[part]
         else:
             raise FileNotFoundError(f"Path '{path}' not found in iCloud Drive.")
@@ -24,20 +26,28 @@ def download_file(
     local_path: str,
 ):
     """Download a file from iCloud Drive to a local path."""
-    if not local_path.endswith(icloud_file.name):
-        local_path = os.path.join(local_path, icloud_file.name)
+    
     if icloud_file.type != 'file':
         logging.error(
             f"The provided icloud_file is not a file: {icloud_file.name}"
         )
         return 0
+    name = icloud_file.name
+    if not local_path.endswith(name):
+        local_path = os.path.join(local_path, name)
+
 
     download = icloud_file.open(stream=True)
-    with open(local_path,"wb") as opened_file:
-        logging.debug(f"Downloading file to {os.path.join(local_path,name)}") 
-        opened_file.write(download.raw.read())
-        logging.info(f"Downloaded file to {os.path.join(local_path,name)}")
-    return 1
+    try:
+        with open(local_path,"wb") as opened_file:
+            logging.debug(f"Downloading file to {local_path}") 
+            opened_file.write(download.raw.read())
+            logging.info(f"Downloaded file to {local_path}")
+    except Exception as e:
+        logging.error(f"Error downloading file to {local_path}: {e}")
+    finally:
+        download.close()
+    
 
 
 
