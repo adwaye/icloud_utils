@@ -22,21 +22,6 @@ class ICloudEngine:
     def sync_drive(self):
         pass
 
-    # def sync_paths(self, icloud_file: str, local_path: str)->None:
-    #     """Sync files between iCloud path and local path."""
-    #     download = file_or_folder.open(stream=True)
-    #     with open(
-    #         os.path.join(
-    #             download_path,
-    #             os.path.join(local_path,name)
-    #         ),
-    #         "wb"
-    #     ) as opened_file:
-    #         # print(f"Downloading file to {os.path.join(local_path,name)}") 
-    #         opened_file.write(download.raw.read())
-    #         print(f"Downloaded file to {os.path.join(local_path,name)}")
-
-
     def sync_paths(self, icloud_path: str, local_path: str)->None:
         """Sync files between iCloud path and local path.
         
@@ -50,7 +35,7 @@ class ICloudEngine:
         icloud_object = get_path_object(self.api, icloud_path)
         all_files_remote = find_all_files(icloud_object,local_path)
         self.sync_downwards(all_files_remote)
-        self.sync_upwards(local_path)
+        # self.sync_upwards(local_path)
 
     @staticmethod
     def sync_downwards(all_files_remote: dict)->None:
@@ -73,10 +58,14 @@ class ICloudEngine:
     @staticmethod
     def sync_upwards(local_path: str)->None:
         """Upload all files from local path to iCloud."""
-        
+        # TODO: find all files in local directory
+        # TODO: find overlap with downloaded files
+        # upload files that are in local but now in downloaded
         local_files = Path().rglob(Path(local_path))
-        breakpoint()
-        # breakpoint()
+        raise NotImplementedError(
+            'Not yet implemented, can only do downward syncs'
+        )
+        
         
 
 
