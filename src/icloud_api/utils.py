@@ -1,6 +1,8 @@
 from pyicloud import PyiCloudService
 from pyicloud.services.drive import DriveNode
-import logging,os
+import logging,os,sys
+import glob
+from pathlib import Path
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -128,7 +130,7 @@ def authenticate(username: str, password: str) -> PyiCloudService:
     return api
 
 
-def find_all_files(
+def find_all_files_remote(
     top_dir:DriveNode,
     local_path="",
     found_files={}
@@ -159,11 +161,74 @@ def find_all_files(
         if f_type == 'file':
             found_files[os.path.join(local_path,name)]=file_or_folder
         elif f_type == 'folder':
-            find_all_files(
+            find_all_files_remote(
                 top_dir=file_or_folder,
                 local_path=os.path.join(local_path,name),
                 found_files=found_files
             )
     return found_files
 
+
+def find_all_files_local(
+    top_dir: str,
+):
+    """Finds all files in the local directory
+
+    Parameters
+    ----------
+    top_dir : str | Path
+        Location where all files need to be found
+    """
+    all_files =[]
+    top_dir = os.path.join(top_dir,'**')
+    for file in glob.iglob(top_dir, recursive=True):
+        if os.path.isfile(file):
+            all_files.append(file)
+    return all_files
+
+
+def make_upload_path(
+    file_path: str,
+    icloud_path: str,
+    local_path: str|Path,
+):
+    """Makes the upload path for icloud
+
+    For example, if the icloud_path is set to be path/to/icloud
+    and the local_file_path is <path>/<to>/<top_dir>
+    while the file path is <path>/<to>/<top_dir>/<file_path>
+    then the output should be path/to/icloud/<file_path>
+    
+    Parameters
+    ----------
+    file_path: str
+        The full local file path which needs to be converted to an icloud file path
+    icloud_path: str
+        The icloud path where the file needs to be uploaded
+    local_path: str
+       The local path where the file is located, the icloud file path is created
+       relative to this one
+
+    returns
+    -------
+    str
+        The full path to the file on icloud, relative to the local path
+    """
+    relative_path = file_path.split(local_path)[1]
+    if relative_path.startswith('/'):
+        relative_path = relative_path[1:]
+    icloud_path= os.path.join(icloud_path, relative_path)
+    return icloud_path
+
+
+
+if __name__=="__main__":
+    top_dir = '/media/adwaye/Backup/tax_return'
+
+    found_files = find_all_files_local(top_dir)
+    print(found_files)
+    found_file = found_files[0]
+    icloud_path = 'Tax'
+    print(found_file)
+    upload_path = make_upload_path(found_file, icloud_path, top_dir)
 

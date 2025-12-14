@@ -3,7 +3,8 @@ from icloud_api.utils import authenticate
 from icloud_api.utils import (
     get_path_object, 
     download_file,
-    find_all_files
+    find_all_files_remote,
+    find_all_files_local
 )
 
 from pathlib import Path
@@ -33,8 +34,9 @@ class ICloudEngine:
             The local filesystem path to sync.
         """
         icloud_object = get_path_object(self.api, icloud_path)
-        all_files_remote = find_all_files(icloud_object,local_path)
+        all_files_remote = find_all_files_remote(icloud_object,local_path)
         self.sync_downwards(all_files_remote)
+        # all_files_local = find_all_files_remote
         # self.sync_upwards(local_path)
 
     @staticmethod
@@ -58,12 +60,24 @@ class ICloudEngine:
             )
 
     @staticmethod
-    def sync_upwards(local_path: str)->None:
+    def sync_upwards(
+        icloud_path: str,
+        local_path: str,
+        all_files_remote: dict
+    )->None:
         """Upload all files from local path to iCloud."""
         # TODO: find all files in local directory
         # TODO: find overlap with downloaded files
         # upload files that are in local but now in downloaded
-        local_files = Path().rglob(Path(local_path))
+        local_files = find_all_files_local(local_path)
+        # files downloaded from local
+        remote_files_downloaded = all_files_remote.keys()
+        #compare if all files local are present upwards
+        for local_file in local_files:
+            if local_file not in remote_files_downloaded:
+                upload_path = make_upload_path(icloud_path,local_file)
+                # upload_file(local_file,remote_path=upload_path)
+
         raise NotImplementedError(
             'Not yet implemented, can only do downward syncs'
         )

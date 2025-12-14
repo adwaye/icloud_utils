@@ -1,0 +1,45 @@
+
+-   id: check-ast
+    name: check python ast
+    description: simply checks whether the files parse as valid python.
+    entry: check-ast
+    language: python
+    types: [python]
+-   id: check-docstring-first
+    name: check docstring is first (deprecated)
+    description: checks a common error of defining a docstring after code.
+    entry: check-docstring-first
+    language: python
+    types: [python]
+-   id: pretty-format-json
+    name: pretty format json
+    description: sets a standard for formatting json files.
+    entry: pretty-format-json
+    language: python
+    types: [json]
+-   id: check-merge-conflict
+    name: check for merge conflicts
+    description: checks for files that contain merge conflict strings.
+    entry: check-merge-conflict
+    language: python
+    types: [text]
+-   id: detect-aws-credentials
+    name: detect aws credentials
+    description: detects *your* aws credentials from the aws cli credentials file.
+    entry: detect-aws-credentials
+    language: python
+    types: [text]
+-   id: detect-private-key
+    name: detect private key
+    description: detects the presence of private keys.
+    entry: detect-private-key
+    language: python
+    types: [text]
+-   id: trailing-whitespace
+    name: trim trailing whitespace
+    description: trims trailing whitespace.
+    entry: trailing-whitespace-fixer
+    language: python
+    types: [text]
+    stages: [pre-commit, pre-push, manual]
+    minimum_pre_commit_version: 3.2.0
